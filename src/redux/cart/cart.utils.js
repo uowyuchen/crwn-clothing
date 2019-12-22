@@ -24,3 +24,23 @@ export const addItemToCart = (cartItems, cartItemToAdd) => {
   // 新加进来的那个item（其是一个object），以及初始的数量1
   return [...cartItems, { ...cartItemToAdd, quantity: 1 }];
 };
+
+// decreate or remove item
+export const removeItemFromCart = (cartItems, cartItemToRemove) => {
+  // 1.检查当前的cartItems中是否有要decrease的cartItem
+  //   有的话就返回这个要decrea的cartItem这个object
+  const existingCartItem = cartItems.find(cartItem => {
+    return cartItem.id === cartItemToRemove.id;
+  });
+  // 2.如果这个要decrease的cartItem的数量是1的话，就删除这个cartItem
+  if (existingCartItem.quantity === 1) {
+    return cartItems.filter(cartItem => cartItem.id !== cartItemToRemove.id);
+  }
+
+  // 3.如果这个要decrease的cartItem的数量大于1，就decrease它
+  return cartItems.map(cartItem => {
+    return cartItem.id === cartItemToRemove.id
+      ? { ...cartItem, quantity: cartItem.quantity - 1 }
+      : cartItem;
+  });
+};
