@@ -46,6 +46,7 @@ class App extends React.Component {
         <Header />
         <Switch>
           <Route exact path='/' component={HomePage} />
+          {/* Route pass 3 objects: match,location,history  */}
           <Route path='/shop/' component={ShopPage} />
           <Route exact path='/checkout' component={CheckoutPage} />
           {/* <Route path='/signin' component={SignInAndSignUpPage} /> */}

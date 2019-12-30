@@ -1,19 +1,20 @@
-import React, { Component } from "react";
-import SHOP_DATA from "./shop.data";
-import CollectionPreview from "../../components/preview-collection/preview-collection.component";
+import React from "react";
+import { Route } from "react-router-dom";
+import CollectionPage from "../collection/collection.component";
+import CollectionOverview from "../../components/collections-overview/collections-overview.component";
 
-export class ShopPage extends Component {
-  state = { collections: SHOP_DATA };
+const ShopPage = ({ match }) => {
+  // console.log(`${match.url}`);
+  // console.log(match);
+  return (
+    <div className='shop-page'>
+      {/* <CollectionOverview /> */}
+      <Route exact path={`${match.path}`} component={CollectionOverview} />
 
-  render() {
-    return (
-      <div>
-        {this.state.collections.map(({ id, ...otherCollectionProps }) => (
-          <CollectionPreview key={id} {...otherCollectionProps} />
-        ))}
-      </div>
-    );
-  }
-}
+      {/* 这个Route在shop C，它也会给collection C 3个objects：history，match，location */}
+      <Route path={`${match.url}/:collectionId`} component={CollectionPage} />
+    </div>
+  );
+};
 
 export default ShopPage;
