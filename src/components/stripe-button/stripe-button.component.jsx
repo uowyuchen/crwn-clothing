@@ -21,7 +21,7 @@ const StripeCheckoutButton = ({ price }) => {
       amount={priceForStripe}
       panelLabel='Pay Now'
       token={onToken}
-      stripeKey={publishableKey}
+      stripeKey='pk_test_NL9IYXn8XEOdGRl4JNjMl5ze'
     />
   );
 };

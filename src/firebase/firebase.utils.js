@@ -6,7 +6,7 @@ import "firebase/auth";
 
 // 这是firebase给我们的
 var firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  apiKey: "AIzaSyB8wlut53v-xxWqIhtLU79IjujDtmwh4tk",
   authDomain: "crwn-db-3a366.firebaseapp.com",
   databaseURL: "https://crwn-db-3a366.firebaseio.com",
   projectId: "crwn-db-3a366",
