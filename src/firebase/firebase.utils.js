@@ -6,7 +6,7 @@ import "firebase/auth";
 
 // 这是firebase给我们的
 var firebaseConfig = {
-  apiKey: "AIzaSyB8wlut53v-xxWqIhtLU79IjujDtmwh4tk",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "crwn-db-3a366.firebaseapp.com",
   databaseURL: "https://crwn-db-3a366.firebaseio.com",
   projectId: "crwn-db-3a366",
@@ -21,6 +21,7 @@ firebase.initializeApp(firebaseConfig);
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
 
+// login signup的时候用的方法。在App.js中用的！
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) {
     return;
@@ -57,5 +58,42 @@ const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({ prompt: "select_account" });
 
 export const signInWithGoogle = () => auth.signInWithPopup(provider);
+
+// 把shop.data.js中的数据加入到数据库。在第16章的时候用的。
+export const addCollectionAndDocuments = async (collectionKey, objectToAdd) => {
+  // create colletionRef using collection key
+  const collectionRef = firestore.collection(collectionKey);
+  //console.log(collectionRef);
+
+  // 16.6 用batch就是要好都好，一部分坏了都坏。
+  const batch = firestore.batch();
+  objectToAdd.forEach(obj => {
+    // 16.6 通过collectionRef拿到docRef
+    const newDocRef = collectionRef.doc();
+    // 16.6 正式往数据库里写入东西
+    batch.set(newDocRef, obj);
+  });
+  // 16.6 batch.commit返回一个promise value
+  return await batch.commit();
+};
+
+// 16.8
+export const convertCollectionsSnapshotToMap = collections => {
+  const transformedCollection = collections.docs.map(doc => {
+    const { title, items } = doc.data();
+
+    return {
+      routeName: encodeURI(title.toLowerCase()),
+      id: doc.id,
+      title: title,
+      items: items
+    };
+  });
+  // console.log(transformedCollection);
+  return transformedCollection.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
+};
 
 export default firebase;

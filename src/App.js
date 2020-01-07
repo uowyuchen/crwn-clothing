@@ -7,15 +7,21 @@ import ShopPage from "./pages/shop/shop.component";
 import Header from "./components/header/header.component";
 import CheckoutPage from "./pages/checkout/checkout.component";
 import SignInAndSignUpPage from "./pages/signin-and-signup/signin-and-signup.component";
-import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
+import {
+  auth,
+  createUserProfileDocument
+  // addCollectionAndDocuments
+} from "./firebase/firebase.utils";
 import { setCurrentUser } from "./redux/user/user.action";
 import { createStructuredSelector } from "reselect";
 import { selectCurrentUser } from "./redux/user/user.selectors";
+// import { selectCollectionsForPreview } from "./redux/shop/shop.selectors";
 
 class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
+    // console.log(this.props.collectionArray);
     // listen for auth status change
     // 就是login了，user有一系列数据；logout了，user是null
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
@@ -33,6 +39,17 @@ class App extends React.Component {
       } else {
         // 如果当前没有登录的user就currentUser: null
         this.props.setCurrentUser(userAuth);
+
+        // 16.5 把collections加入database中,先拿到CollectionRef
+        // 16.6 collectionArray中有不想被传到数据库中的东西比如：routeName，id。
+        // 16.6 所以我们不能把collectionArray都传走。
+        // addCollectionAndDocuments(
+        //   "collections",
+        //   this.props.collectionArray.map(({ title, items }) => ({
+        //     title,
+        //     items
+        //   }))
+        // );
       }
     });
   }
@@ -73,6 +90,7 @@ class App extends React.Component {
 // createStructuredSelector就是只是为了少写点代码而已！
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser
+  // collectionArray: selectCollectionsForPreview
 });
 
 // 此举为了调用action
