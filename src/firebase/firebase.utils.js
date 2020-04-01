@@ -4,7 +4,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
 
-// 这是firebase给我们的
+// step 1: 这是firebase给我们的
 var firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "crwn-db-3a366.firebaseapp.com",
@@ -16,22 +16,40 @@ var firebaseConfig = {
   measurementId: "G-MB5M12NNMY"
 };
 
+// step 2: 初始化
 firebase.initializeApp(firebaseConfig);
 
+// step 3: 拿到我们需要的 auth 和 firestore
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
+// 上面👆的firestore就是下面下面👇的 db
+// export const db = firebase.firestore();
 
-// login signup的时候用的方法。在App.js中用的！
+// step 4: 拿到此provider，当前是Google Signin，当然还有Facebook Signin等
+const provider = new firebase.auth.GoogleAuthProvider();
+// this means we want to always trigger the Google popup when ever we
+// use this Google auth provider for authentication and sign in
+provider.setCustomParameters({ prompt: "select_account" });
+
+// step 5: 导出signInWithGoogle 给前端Sign In Button使用
+export const signInWithGoogle = () => auth.signInWithPopup(provider);
+
+
+
+// step 6: login signup的时候用的方法。在App.js中用的！
 export const createUserProfileDocument = async (userAuth, additionalData) => {
+  // 如果user没登录
   if (!userAuth) {
     return;
   }
+  // 如果有user登录
   const userRef = firestore.doc(`users/${userAuth.uid}`);
   // snapShot是一个真正的一条数据(在这里是user的数据)
   const snapShot = await userRef.get();
 
   // 如果没有当前登录的user信息，就保存到database
   if (!snapShot.exists) {
+    // 要把name和email这一组object存入db
     const { displayName, email } = userAuth;
     console.log(displayName);
     const createAt = new Date();
@@ -52,12 +70,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   return userRef;
 };
 
-const provider = new firebase.auth.GoogleAuthProvider();
-// this means we want to always trigger the Google popup when ever we
-// use this Google auth provider for authentication and sign in
-provider.setCustomParameters({ prompt: "select_account" });
 
-export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
 // 把shop.data.js中的数据加入到数据库。在第16章的时候用的。
 export const addCollectionAndDocuments = async (collectionKey, objectToAdd) => {

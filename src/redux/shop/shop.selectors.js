@@ -33,7 +33,7 @@ export const selectCollections = createSelector(
 export const selectCollectionsForPreview = createSelector(
   [selectCollections],
   collections =>
-    collections ? Object.keys(collections).map(key => collections[key]) : null
+    collections ? Object.keys(collections).map(key => collections[key]) : []
 );
 
 // collectionUrlParam 比如是 hats
@@ -44,3 +44,14 @@ export const selectCollection = collectionUrlParam =>
     [selectCollections],
     collections => (collections ? collections[collectionUrlParam] : null)
   );
+
+// isFetching selector
+export const selectIsCollectionFetching = createSelector(
+  [selectShop],
+  shop => shop.isFetching
+);
+
+export const selectIsCollectionLoaded = createSelector(
+  [selectShop],
+  shop => !!shop.collections
+);
