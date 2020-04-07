@@ -1,16 +1,32 @@
-import { UserActionTypes } from "./user.types";
+import UserActionTypes from "./user.types";
 const INITIAL_STATE = {
-  currentUser: null
+  currentUser: null,
+  error: null,
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case UserActionTypes.SET_CURRENT_USER:
-      // 见root-reducer：其实下面👇的大括号的名字是user object
-      // user: { ...state, currentUser: action.payload }
+    // sign in success
+    case UserActionTypes.SIGN_IN_SUCCESS:
       return {
         ...state,
-        currentUser: action.payload
+        currentUser: action.payload,
+        error: null,
+      };
+    // signout success
+    case UserActionTypes.SIGN_OUT_SUCCESS:
+      return {
+        ...state,
+        currentUser: null,
+        error: null,
+      };
+    // sign in & signup & signout failure
+    case UserActionTypes.SIGN_IN_FAILURE:
+    case UserActionTypes.SIGN_UP_FAILURE:
+    case UserActionTypes.SIGN_OUT_FAILURE:
+      return {
+        ...state,
+        error: action.payload,
       };
     default:
       return state;

@@ -13,7 +13,7 @@ var firebaseConfig = {
   storageBucket: "crwn-db-3a366.appspot.com",
   messagingSenderId: "944083375472",
   appId: "1:944083375472:web:f0a8fa21829e124cbcabb5",
-  measurementId: "G-MB5M12NNMY"
+  measurementId: "G-MB5M12NNMY",
 };
 
 // step 2: 初始化
@@ -26,15 +26,13 @@ export const firestore = firebase.firestore();
 // export const db = firebase.firestore();
 
 // step 4: 拿到此provider，当前是Google Signin，当然还有Facebook Signin等
-const provider = new firebase.auth.GoogleAuthProvider();
+export const googleProvider = new firebase.auth.GoogleAuthProvider();
 // this means we want to always trigger the Google popup when ever we
 // use this Google auth provider for authentication and sign in
-provider.setCustomParameters({ prompt: "select_account" });
+googleProvider.setCustomParameters({ prompt: "select_account" });
 
 // step 5: 导出signInWithGoogle 给前端Sign In Button使用
-export const signInWithGoogle = () => auth.signInWithPopup(provider);
-
-
+export const signInWithGoogle = () => auth.signInWithPopup(googleProvider);
 
 // step 6: login signup的时候用的方法。在App.js中用的！
 export const createUserProfileDocument = async (userAuth, additionalData) => {
@@ -58,7 +56,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
         displayName,
         email,
         createAt,
-        ...additionalData
+        ...additionalData,
       });
       //console.log(additionalData);
     } catch (error) {
@@ -70,8 +68,6 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   return userRef;
 };
 
-
-
 // 把shop.data.js中的数据加入到数据库。在第16章的时候用的。
 export const addCollectionAndDocuments = async (collectionKey, objectToAdd) => {
   // create colletionRef using collection key
@@ -80,7 +76,7 @@ export const addCollectionAndDocuments = async (collectionKey, objectToAdd) => {
 
   // 16.6 用batch就是要好都好，一部分坏了都坏。
   const batch = firestore.batch();
-  objectToAdd.forEach(obj => {
+  objectToAdd.forEach((obj) => {
     // 16.6 通过collectionRef拿到docRef
     const newDocRef = collectionRef.doc();
     // 16.6 正式往数据库里写入东西
@@ -91,15 +87,15 @@ export const addCollectionAndDocuments = async (collectionKey, objectToAdd) => {
 };
 
 // 16.8
-export const convertCollectionsSnapshotToMap = collections => {
-  const transformedCollection = collections.docs.map(doc => {
+export const convertCollectionsSnapshotToMap = (collections) => {
+  const transformedCollection = collections.docs.map((doc) => {
     const { title, items } = doc.data();
 
     return {
       routeName: encodeURI(title.toLowerCase()),
       id: doc.id,
       title: title,
-      items: items
+      items: items,
     };
   });
   // console.log(transformedCollection);
@@ -107,6 +103,15 @@ export const convertCollectionsSnapshotToMap = collections => {
     accumulator[collection.title.toLowerCase()] = collection;
     return accumulator;
   }, {});
+};
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = auth.onAuthStateChanged((userAuth) => {
+      unsubscribe();
+      resolve(userAuth);
+    }, reject);
+  });
 };
 
 export default firebase;
