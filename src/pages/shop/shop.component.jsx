@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route } from "react-router-dom";
 import CollectionPage from "../collection/collection.component";
 import CollectionOverview from "../../components/collections-overview/collections-overview.component";
@@ -14,41 +14,41 @@ import WithSpinner from "../../components/with-spinner/with-spinner.component";
 const CollectionsOverviewWithSpinner = WithSpinner(CollectionOverview);
 const CollectionPageWithSpinner = WithSpinner(CollectionPage);
 
-class ShopPage extends React.Component {
-  componentDidMount() {
-    const { fetchCollectionsStart } = this.props;
+const ShopPage = ({
+  fetchCollectionsStart,
+  match,
+  isCollectionFetching,
+  isCollectionsLoaded,
+}) => {
+  useEffect(() => {
     fetchCollectionsStart();
-  }
+  }, [fetchCollectionsStart]);
 
-  render() {
-    const { match, isCollectionFetching, isCollectionsLoaded } = this.props;
+  return (
+    <div className='shop-page'>
+      <Route
+        exact
+        path={`${match.url}`}
+        render={(props) => (
+          <CollectionsOverviewWithSpinner
+            isLoading={isCollectionFetching}
+            {...props}
+          />
+        )}
+      />
 
-    return (
-      <div className='shop-page'>
-        <Route
-          exact
-          path={`${match.url}`}
-          render={(props) => (
-            <CollectionsOverviewWithSpinner
-              isLoading={isCollectionFetching}
-              {...props}
-            />
-          )}
-        />
-
-        <Route
-          path={`${match.url}/:collectionId`}
-          render={(props) => (
-            <CollectionPageWithSpinner
-              isLoading={!isCollectionsLoaded}
-              {...props}
-            />
-          )}
-        />
-      </div>
-    );
-  }
-}
+      <Route
+        path={`${match.url}/:collectionId`}
+        render={(props) => (
+          <CollectionPageWithSpinner
+            isLoading={!isCollectionsLoaded}
+            {...props}
+          />
+        )}
+      />
+    </div>
+  );
+};
 
 const mapStateToProps = createStructuredSelector({
   isCollectionFetching: selectIsCollectionFetching,
